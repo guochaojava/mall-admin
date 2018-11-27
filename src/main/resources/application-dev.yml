@@ -1,0 +1,42 @@
+## Mybatis 配置
+mybatis:
+  typeAliasesPackage: com.barista.mall.model
+  mapperLocations: classpath:mapper/*.xml
+
+
+#自定义 配置
+example:
+  upload:
+      path: E://upload
+  druid:
+    username: root
+    password: 123456
+    url: jdbc:mysql://192.168.94.129:3306/mall?useUnicode=true&characterEncoding=utf8
+    driverClassName: com.mysql.jdbc.Driver
+    filters: stat,wall,log4j2
+    # 最大并发连接数
+    maxActive: 1000
+    # 初始化连接数量
+    initialSize: 10
+    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    timeBetweenEvictionRunsMillis: 60000
+    # 配置一个连接在池中最小生存的时间，单位是毫秒
+    minEvictableIdleTimeMillis: 180000
+    validationQuery: SELECT 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    maxOpenPreparedStatements: 20
+    # 打开removeAbandoned功能
+    removeAbandoned: true
+    # 1800秒，也就是30分钟
+    removeAbandonedTimeout: 1800
+    # 关闭abanded连接时输出错误日志
+    logAbandoned: true
+
+#日志
+logging:
+  config: classpath:log4j2-dev.xml
+
+server:
+  port: 8081

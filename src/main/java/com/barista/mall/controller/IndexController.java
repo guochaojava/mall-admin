@@ -1,0 +1,61 @@
+package com.barista.mall.controller;
+
+import com.barista.mall.model.Admin;
+import com.barista.mall.service.AdminService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+
+/**
+ * @author guochao
+ * @since 1.0.0
+ */
+@Controller
+public class IndexController {
+
+    private static final String VIEW_PREFIX = "index/";
+
+    @Autowired
+    private AdminService adminService;
+
+    @GetMapping("/index")
+    public String index(Model model) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userName = "";
+        if (principal instanceof UserDetails) {
+            userName = ((UserDetails) principal).getUsername();
+        } else {
+            userName = principal.toString();
+        }
+
+        Admin admin = adminService.selectByLoginName(userName);
+
+        model.addAttribute("user", admin);
+
+        return VIEW_PREFIX + "index";
+    }
+
+    @GetMapping("/welcome")
+    public String welcome() {
+        return VIEW_PREFIX + "welcome";
+    }
+
+    @GetMapping("/info")
+    public String info(Model model) {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userName = "";
+        if (principal instanceof UserDetails) {
+            userName = ((UserDetails) principal).getUsername();
+        } else {
+            userName = principal.toString();
+        }
+
+        Admin admin = adminService.selectByLoginName(userName);
+
+        model.addAttribute("user", admin);
+        return VIEW_PREFIX + "info";
+    }
+}

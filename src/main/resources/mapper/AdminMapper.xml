@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.barista.mall.dao.AdminMapper">
+    <resultMap id="BaseResultMap" type="com.barista.mall.model.Admin">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="login_name" property="loginName" jdbcType="VARCHAR"/>
+        <result column="password" property="password" jdbcType="VARCHAR"/>
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="BIGINT"/>
+        <result column="last_login_time" property="lastLoginTime" jdbcType="BIGINT"/>
+        <result column="status" property="status" jdbcType="BIT"/>
+    </resultMap>
+    <resultMap id="VoResultMap" type="com.barista.mall.vo.AdminVO">
+        <id column="id" property="id" jdbcType="BIGINT"/>
+        <result column="login_name" property="loginName" jdbcType="VARCHAR"/>
+        <result column="nick_name" property="nickName" jdbcType="VARCHAR"/>
+        <result column="role_id" property="roleId" jdbcType="BIGINT"/>
+        <result column="role_name" property="roleName" jdbcType="VARCHAR"/>
+        <result column="create_time" property="createTime" jdbcType="BIGINT"/>
+        <result column="last_login_time" property="lastLoginTime" jdbcType="BIGINT"/>
+        <result column="status" property="status" jdbcType="BIT"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, login_name, password, nick_name, create_time, last_login_time, status
+    </sql>
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
+        select
+        <include refid="Base_Column_List"/>
+        from admin
+        where id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <update id="update" parameterType="com.barista.mall.model.Admin">
+        update admin
+        <set>
+            <if test="loginName != null">
+                login_name = #{loginName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null and password != ''">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="nickName != null">
+                nick_name = #{nickName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=BIGINT},
+            </if>
+            <if test="lastLoginTime != null">
+                last_login_time = #{lastLoginTime,jdbcType=BIGINT},
+            </if>
+            <if test="status != null">
+                status = #{status,jdbcType=BIT},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateRole" parameterType="com.barista.mall.model.Admin">
+        UPDATE admin_role
+        SET role_id = #{roleId}
+        WHERE admin_id = #{id}
+    </update>
+
+    <select id="selectByLoginName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from admin
+        where login_name = #{loginName,jdbcType=VARCHAR}
+    </select>
+
+    <select id="list" resultMap="VoResultMap">
+        SELECT
+        a.id,
+        a.login_name,
+        a.nick_name,
+        r.name AS role_name,
+        a.create_time,
+        a.last_login_time,
+        a.status,
+        r.id AS role_id
+        FROM admin a
+        LEFT JOIN admin_role ar ON a.id = ar.admin_id
+        LEFT JOIN role r ON r.id = ar.role_id
+        <where>
+            a.login_name != 'admin'
+            <if test="loginName != null">
+                and a.login_name like CONCAT('%',#{loginName},'%')
+            </if>
+            <if test="nickName != null">
+                and a.nick_name like CONCAT('%',#{nickName},'%')
+            </if>
+            <if test="roleId != null and roleId !=0 ">
+                and r.id = #{roleId}
+            </if>
+        </where>
+    </select>
+
+    <update id="deleteById">
+        UPDATE admin
+        SET status = 0
+        WHERE id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <update id="updateStatusById">
+        UPDATE admin
+        SET `status` = CASE `status`
+        WHEN 1 THEN
+        0
+        WHEN 0 THEN
+        1
+        END
+        WHERE
+        id IN
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="updateLastLoginTimeByLoginName">
+        UPDATE admin
+        SET last_login_time = #{lastLoginTime}
+        WHERE login_name = #{loginName}
+    </update>
+
+    <insert id="add" parameterType="com.barista.mall.model.Admin">
+        <selectKey resultType="java.lang.Long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into admin
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="loginName != null">
+                login_name,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="nickName != null">
+                nick_name,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="lastLoginTime != null">
+                last_login_time,
+            </if>
+            <if test="status != null">
+                status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="loginName != null">
+                #{loginName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="nickName != null">
+                #{nickName,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=BIGINT},
+            </if>
+            <if test="lastLoginTime != null">
+                #{lastLoginTime,jdbcType=BIGINT},
+            </if>
+            <if test="status != null">
+                #{status,jdbcType=BIT},
+            </if>
+        </trim>
+    </insert>
+
+    <insert id="addRole" parameterType="com.barista.mall.model.Admin">
+        INSERT INTO admin_role (admin_id, role_id) VALUES (#{id}, #{roleId})
+    </insert>
+
+    <update id="info" parameterType="com.barista.mall.model.Admin">
+        update admin
+        <set>
+            <if test="password != null and password != ''">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="nickName != null">
+                nick_name = #{nickName,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <delete id="delete">
+        delete from admin
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,66 @@
+<#include "/common/header.html" />
+
+<body>
+<div class="container-fluid larry-wrapper">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12">
+
+            <!--列表-->
+            <section class="panel panel-padding">
+                <div class="group-button">
+                    <button class="layui-btn layui-btn-normal layui-btn-big modal"
+                            data-params='{"content":"#excel-import", "area":"500px,250px", "title":"导入", "type":"1","dataName":"import"}'>
+                        excel导入
+                    </button>
+
+                    <button class="layui-btn layui-btn-normal layui-btn-big modal"
+                            data-params='{"content": "${base}/role/add", "title": "添加角色","full":"true","action":"add","dataName":"role","key":"id","type":2}'>
+                        excel导出
+                    </button>
+
+                    <button class="layui-btn layui-btn-warm layui-btn-big modal"
+                            data-params='{"content": "${base}/role/add", "title": "添加角色","full":"true","action":"add","dataName":"role","key":"id","type":2}'>
+                        word导出
+                    </button>
+
+
+                    <button class="layui-btn layui-btn layui-btn-big modal"
+                            data-params='{"content": "${base}/role/add", "title": "添加角色","full":"true","action":"add","dataName":"role","key":"id","type":2}'>
+                        pdf导出
+                    </button>
+                </div>
+
+            </section>
+        </div>
+    </div>
+</div>
+
+<div id="excel-import" class="add-subcat">
+    <form id="form1" class="layui-form"
+          data-params='{ "dataName":"import", "key": null, "action":"nodo", "loading":false }'
+          action="${base}/demo/excel/import" method="post">
+
+        <div class="layui-form-item">
+            <label class="layui-form-label">上传文件</label>
+            <div class="layui-input-block">
+                <input type="file" lay-type="file" name="file" class="layui-upload-file">
+                <input type="hidden" name="path">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" jq-submit jq-filter="submit">提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+</body>
+
+<#include "/common/version.html" />
+
+<script>
+    layui.use('list');
+</script>
+
+</html>

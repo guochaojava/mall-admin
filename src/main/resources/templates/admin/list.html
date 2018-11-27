@@ -1,0 +1,154 @@
+<#include "/common/header.html"/>
+
+<body>
+<div class="container-fluid larry-wrapper">
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-12">
+            <!--头部搜索-->
+            <section class="panel panel-padding">
+                <form class="layui-form" data-params='{"dataName":"admin","action":"list"}' action="${base}/admin/list" method="post">
+                    <div class="layui-form">
+                        <div class="layui-inline">
+                            <div class="layui-input-inline">
+                                <input class="layui-input" name="loginName" placeholder="登录名">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <div class="layui-input-inline">
+                                <input class="layui-input" name="nickName" placeholder="昵称">
+                            </div>
+                        </div>
+                        <div class="layui-inline">
+                            <select name="roleId">
+                                <option value="0">请选择角色</option>
+                                <#list roleList as p>
+                                    <option value="${p.id}">${p.name}</option>
+                                </#list>
+                            </select>
+                        </div>
+                        <div class="layui-inline">
+                            <button lay-submit class="layui-btn" lay-filter="search">查找</button>
+                        </div>
+                    </div>
+                </form>
+            </section>
+
+            <!--列表-->
+            <section class="panel panel-padding">
+                <div class="group-button">
+                    <button class="layui-btn layui-btn-small layui-btn-danger ajax-all"
+                            data-params='{"url": "${base}/admin/delete","confirm":"true","dataName":"admin","key":"id","action":"del"}'>
+                        <i class="iconfont">&#xe626;</i> 删除
+                    </button>
+
+                    <button class="layui-btn layui-btn-small layui-btn-normal ajax-all"
+                            data-params='{"url": "${base}/admin/status","data":"switch=1","dataName":"admin","key":"id"}'>
+                        <i class="layui-icon">&#x1005;</i> 启用
+                    </button>
+                    <button class="layui-btn layui-btn-small modal"
+                            data-params='{"content":"${base}/admin/add","area":"600px,520px", "title":"添加管理员","type":"2","dataName":"admin","key":"id","action":"add"}'>
+                        <i class="iconfont">&#xe649;</i> 添加
+                    </button>
+                </div>
+                <div class="layui-form">
+                    <table id="example" class="layui-table jq-even" data-params='{"dataName":"admin","key":"id"}'>
+                        <thead>
+                        <tr>
+                            <th width="30"><input type="checkbox" id="checkall" data-name="id" lay-filter="check"
+                                                  lay-skin="primary"></th>
+                            <th>登录账号</th>
+                            <th>昵称</th>
+                            <th>角色</th>
+                            <th>加入时间</th>
+                            <th>最后登录时间</th>
+                            <th width="80">状态</th>
+                            <th width="150">操作</th>
+                        </tr>
+                        </thead>
+                        <tbody id="list"></tbody>
+                    </table>
+                </div>
+
+                <div class="text-right" id="page"></div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<div class="add-subcat">
+
+</div>
+</body>
+
+<script id="list-tpl" type="text/html"
+        data-params='{"url":"${base}/admin/list","dataName":"admin","key":"id","pageid":"#page"}'>
+
+    {{# layui.each(d.list, function(index, item){ }}
+    <tr>
+        <td><input type="checkbox" name="id" value="{{ item.id}}" lay-skin="primary"></td>
+        <td>{{ item.loginName}}</td>
+        <td>{{ item.nickName}}</td>
+        <td>{{ item.roleName}}</td>
+        <td>{{ formatDateTime(item.createTime)}}</td>
+        <td>{{ formatDateTime(item.lastLoginTime)}}</td>
+        <td><input type="checkbox" name="status" lay-skin="switch" lay-text="启用|禁用" value="true" {{#if (item.status){
+                   }}checked="checked" {{# } }} lay-filter="ajax"
+                   data-params='{"url":"${base}/admin/status","data":"id={{ item.id}}"}'></td>
+        <td>
+            <button class="layui-btn layui-btn-mini modal"
+                    data-params='{"content": "${base}/admin/edit","area":"600px,520px","title":"编辑{{ item.nickName}}管理员","data":"id={{item.id}}","type":"2","action":"edit","bind":true}'>
+                <i class="iconfont">&#xe653;</i>编辑
+            </button>
+            <button class="layui-btn layui-btn-mini layui-btn-danger ajax"
+                    data-params='{"url": "${base}/admin/delete","confirm":"true","data":"id={{item.id}}","action":"del"}'>
+                <i class="iconfont">&#xe626;</i>删除
+            </button>
+        </td>
+        </td>
+    </tr>
+    {{# }); }}
+</script>
+
+<script src="${base}/js/common.js"></script>
+
+<#include "/common/version.html" />
+
+<script>
+    layui.use('list',function () {
+        var $ = layui.jquery,
+            form = layui.jqform;
+
+        form.verify({
+            loginName: function (value) {
+                if (!new RegExp("^[a-zA-Z0-9_\u4e00-\u9fa5\\s·]+$").test(value)) {
+                    return '不能有特殊字符';
+                }
+                if (/^\d+\d+\d$/.test(value)) {
+                    return '不能全为数字';
+                }
+            },
+            pass2: function (value) {
+                var pwd = $("input[name='password']").val();
+                if (value != pwd) {
+                    return '两次密码不一致';
+                }
+            },
+            pass: [
+                /^[\S]{6,12}$/, '密码必须6到12位，且不能出现空格'
+            ]
+        });
+
+        //获取角色
+        $.ajax({
+            url: "${base}/role/listNoPages",
+            dataType: "json",
+            success: function (data) {
+                $.each(data.data.list, function (i, item) {
+                    $("#role").append("<option value='" + item.id + "'>" + item.name + "</option>")
+                });
+            }
+        });
+    });
+</script>
+
+</html>
