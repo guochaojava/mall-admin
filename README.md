@@ -5,16 +5,8 @@
 > 不定期更新完善
 
 ### 商城后台
-- [x] log4j2日志
-- [x] freemarker模版引擎
-- [x] 多环境配置文件
-- [x] mybatis
-- [x] 异常处理：全局异常、自定义异常
-- [x] lombok 简化代码
-- [x] spring security权限管理（包含freemarker tag使用示例）
-- [x] devtools热部署
-- [x] hutool工具集合
-- [x] 富文本编辑器
+
+> 新建mall数据，导入sql文件，修改数据库连接即可访问
 
 
 ### 页面采用[jqadmin后台模版](http://jqadmin.jqcool.net/)(简化页面开发)
